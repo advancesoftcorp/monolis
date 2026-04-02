@@ -16,6 +16,7 @@ BIN_DIR = ./bin
 SRC_DIR = ./src
 TST_DIR = ./src_test
 OBJ_DIR = ./obj
+SUBMODULE_OBJ_DIR = ./submoduleobj
 LIB_DIR = ./lib
 WRAP_DIR= ./wrapper
 TST_WRAP_DIR = ./wrapper_test
@@ -65,7 +66,10 @@ MAKE = make
 CD   = cd
 CP   = cp
 RM   = rm -rf
-AR   = - ar ruv
+AR   = ar
+MKDIR = mkdir -p
+
+WORK_DIR := $(abspath .)
 
 ##> **********
 ##> target (1)
@@ -338,7 +342,7 @@ lib: \
 	$(LIBALL_TARGET)
 
 $(LIB_TARGET): $(LIB_OBJS)
-	$(AR) $@ $(LIB_OBJS) $(ARC_LIB)
+	$(AR) rus $@ $(LIB_OBJS) $(ARC_LIB)
 
 $(TEST_TARGET): $(TST_OBJS)
 	$(LINK) $(FFLAGS) $(CPP) $(INCLUDE) -o $@ $(TST_OBJS) $(USE_LIB)
@@ -374,19 +378,25 @@ cp_bin_lib:
 	$(CP) ./submodule/monolis_utils/bin/* ./bin/
 	$(CP) ./submodule/gedatsu/bin/* ./bin/
 
-$(LIBALL_TARGET):
-	ar -rc $(LIB_DIR)/libmonolis.a $(LIB_DIR)/libmonolis_solver.a $(LIB_DIR)/libgedatsu.a $(LIB_DIR)/libmonolis_utils.a
+$(LIBALL_TARGET): $(LIB_OBJS)
+	$(MKDIR) $(SUBMODULE_OBJ_DIR) && \
+	$(CD) $(SUBMODULE_OBJ_DIR) && \
+	$(AR) x $(WORK_DIR)/$(LIB_DIR)/libgedatsu.a && \
+	$(AR) x $(WORK_DIR)/$(LIB_DIR)/libmonolis_utils.a && \
+	$(CD) $(WORK_DIR) && \
+	$(AR) rus $(LIB_DIR)/libmonolis.a $(LIB_OBJS) $(SUBMODULE_OBJ_DIR)/*.o
 
 clean:
-	$(RM) $(LIB_OBJS) \
-	$(RM) $(TST_OBJS) \
-	$(RM) $(TST_C_OBJS) \
-	$(RM) $(LIB_TARGET) \
-	$(RM) $(LIBALL_TARGET) \
-	$(RM) $(TEST_TARGET) \
-	$(RM) $(TEST_C_TARGET) \
-	$(RM) ./include/*.mod \
-	$(RM) $(addprefix ./include/, $(C_HEADER_FILES)) \
+	$(RM) $(LIB_OBJS); \
+	$(RM) $(SUBMODULE_OBJ_DIR); \
+	$(RM) $(TST_OBJS); \
+	$(RM) $(TST_C_OBJS); \
+	$(RM) $(LIB_TARGET); \
+	$(RM) $(LIBALL_TARGET); \
+	$(RM) $(TEST_TARGET); \
+	$(RM) $(TEST_C_TARGET); \
+	$(RM) ./include/*.mod; \
+	$(RM) $(addprefix ./include/, $(C_HEADER_FILES)); \
 	$(RM) ./bin/*
 
 .PHONY: clean
