@@ -18,6 +18,7 @@
 #include "./eigen/monolis_eigen_solver_c_test.h"
 #include "./wrapper/monolis_wrapper_scalapack_c_test.h"
 #include "./optimize/monolis_nnls_c_test.h"
+#include "./bcsr_solver/monolis_bcsr_solver_c_test.h"
 
 int main()
 {
@@ -52,6 +53,7 @@ int main()
   if(monolis_mpi_get_global_comm_size() == 1){
     monolis_solve_c_test();
     monolis_eigen_solve_c_test();
+    monolis_bcsr_solve_c_test();
   }
 
   monolis_mpi_finalize();
