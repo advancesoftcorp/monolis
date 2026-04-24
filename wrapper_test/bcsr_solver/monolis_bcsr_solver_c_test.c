@@ -15,6 +15,7 @@ void monolis_BCSR_solve_c_test_R(){
   int n_vertex;
   int n_node;
   int n_dof;
+  int my_node;
   int i, j, k;
   int comm_size;
   int my_rank;
@@ -42,14 +43,23 @@ void monolis_BCSR_solve_c_test_R(){
         global_index[i] = i;
       }
     } else {
-      for (i = 0; i < n_vertex; ++i) {
-        global_index[i] = 18 + (my_rank - 1) * 18 + i;
+      for (i = 0; i < n_vertex - 2; ++i) {
+	j = 18 + (my_rank - 1) * 16 + i + 2;
+        global_index[i] = j;
+      }
+      for (i = 0; i < 2; ++i) {
+	j = 18 + (my_rank - 1) * 16 + i;
+        global_index[n_vertex - 1 - i] = j;
       }
     }
 
-    monolis_com_initialize_by_global_id(&com, MPI_COMM_WORLD, 
-                                        (my_rank == 0 || my_rank == comm_size - 1)? 18: 16, 
-                                        n_vertex, global_index);
+    if (my_rank == 0) {
+      my_node = 20;
+    } else if (my_rank == comm_size - 1) {
+      my_node = 18;
+    } else { my_node = 16; }
+
+    monolis_com_initialize_by_global_id(&com, MPI_COMM_WORLD, my_node, n_vertex, global_index);
   } else {
     monolis_com_initialize_by_self(&com);
   }
@@ -94,9 +104,8 @@ void monolis_BCSR_solve_c_test_R(){
   index[20] = k;
 
   monolis_set_matrix_BCSR_R(
-      &mat, n_node * n_dof, n_node * n_dof, 1, 58,
+      &mat, n_node * n_dof - 2, n_node * n_dof * comm_size, 1, 58,
       fv, index, item);
-
   for(i = 0; i < 20; ++i){
     a[i] = 1.0;
   }
@@ -111,7 +120,6 @@ void monolis_BCSR_solve_c_test_R(){
 
   monolis_solve_R(&mat, &com, b, a);
 
-  monolis_mpi_update_R(&com, 10, 2, a);
   for(i = 0; i < 20; ++i){
     monolis_test_check_eq_R1("monolis_solve_c_test R", a[i], 1.0);
   }
