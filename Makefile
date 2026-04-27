@@ -39,12 +39,19 @@ ifdef FLAGS
 
 	ifeq ($(findstring INTEL, $(DFLAGS)), INTEL)
 		FC      = mpiifx -qmkl=cluster
-		FFLAGS  = -fPIC -O2 -align array64byte -nofor-main
 		CC      = mpiicx
-		CFLAGS  = -fPIC -O2 -no-multibyte-chars
+		ifeq ($(findstring DEBUG, $(DFLAGS)), DEBUG)
+			FFLAGS  = -fPIC -O2 -align array64byte -nofor-main -g
+			CFLAGS  = -fPIC -O2 -no-multibyte-chars -g
+		else
+			FFLAGS  = -fPIC -O2 -align array64byte -nofor-main
+			CFLAGS  = -fPIC -O2 -no-multibyte-chars
+		endif
+
 		MOD_DIR = -module ./include
 		USE_LIB2= 
 		LINK    = $(FC)
+		USE_LIB2= -L./lib -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64
 	endif
 
 	ifeq ($(findstring A64FX, $(DFLAGS)), A64FX)
@@ -295,6 +302,8 @@ monolis_solver_c_test.c
 SRC_EIGEN_SOLVER_C_TEST = \
 monolis_eigen_solver_c_test.c
 
+SRC_BCSR_SOLVER_C_TEST = monolis_bcsr_solver_c_test.c
+
 SRC_ALL_C_TEST = \
 $(addprefix define/, $(SRC_DEFINE_C_TEST)) \
 $(addprefix linalg/, $(SRC_LINALG_C_TEST)) \
@@ -302,7 +311,8 @@ $(addprefix matrix/, $(SRC_MAT_C_TEST)) \
 $(addprefix wrapper/, $(SRC_WRAP_C_TEST)) \
 $(addprefix optimize/, $(SRC_NNLS_C_TEST)) \
 $(addprefix solver/, $(SRC_SOLVER_C_TEST)) \
-$(addprefix eigen/, $(SRC_EIGEN_SOLVER_C_TEST))
+$(addprefix eigen/, $(SRC_EIGEN_SOLVER_C_TEST)) \
+$(addprefix bcsr_solver/, $(SRC_BCSR_SOLVER_C_TEST))
 
 TST_SRC_C_ALL = $(SRC_ALL_C_TEST) monolis_c_test.c
 TST_C_SOURCES = $(addprefix $(TST_WRAP_DIR)/, $(TST_SRC_C_ALL))

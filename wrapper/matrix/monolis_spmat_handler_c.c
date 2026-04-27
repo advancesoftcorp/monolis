@@ -187,12 +187,12 @@ void monolis_set_matrix_BCSR_R(
   mat->mat.NP = np;
   mat->mat.NDOF = n_dof;
 
-  monolis_alloc_I_1d(mat->mat.CSR.index, np + 1);
-  monolis_alloc_I_1d(mat->mat.CSR.item, nz);
+  mat->mat.CSR.index = monolis_alloc_I_1d(mat->mat.CSR.index, np + 1);
+  mat->mat.CSR.item = monolis_alloc_I_1d(mat->mat.CSR.item, nz);
 
-  monolis_alloc_R_1d(mat->mat.R.A, n_dof*n_dof*nz);
-  monolis_alloc_R_1d(mat->mat.R.X, n_dof*np);
-  monolis_alloc_R_1d(mat->mat.R.B, n_dof*np);
+  mat->mat.R.A = monolis_alloc_R_1d(mat->mat.R.A, n_dof*n_dof*nz);
+  mat->mat.R.X = monolis_alloc_R_1d(mat->mat.R.X, n_dof*np);
+  mat->mat.R.B = monolis_alloc_R_1d(mat->mat.R.B, n_dof*np);
 
   int i;
   for(i = 0; i < np + 1; i++) {
@@ -207,9 +207,9 @@ void monolis_set_matrix_BCSR_R(
     mat->mat.R.A[i] = A[i];
   }
 
-  monolis_alloc_I_1d(mat->mat.CSC.index, np + 1);
-  monolis_alloc_I_1d(mat->mat.CSC.item, nz);
-  monolis_alloc_I_1d(mat->mat.CSC.perm, nz);
+  mat->mat.CSC.index = monolis_alloc_I_1d(mat->mat.CSC.index, np + 1);
+  mat->mat.CSC.item = monolis_alloc_I_1d(mat->mat.CSC.item, nz);
+  mat->mat.CSC.perm = monolis_alloc_I_1d(mat->mat.CSC.perm, nz);
 
   monolis_get_CSC_format(
     n,
@@ -441,12 +441,12 @@ void monolis_set_matrix_BCSR_C(
   mat->mat.NP = np;
   mat->mat.NDOF = n_dof;
 
-  monolis_alloc_I_1d(mat->mat.CSR.index, np + 1);
-  monolis_alloc_I_1d(mat->mat.CSR.item, nz);
+  mat->mat.CSR.index = monolis_alloc_I_1d(mat->mat.CSR.index, np + 1);
+  mat->mat.CSR.item = monolis_alloc_I_1d(mat->mat.CSR.item, nz);
 
-  monolis_alloc_C_1d(mat->mat.C.A, n_dof*n_dof*nz);
-  monolis_alloc_C_1d(mat->mat.C.X, n_dof*np);
-  monolis_alloc_C_1d(mat->mat.C.B, n_dof*np);
+  mat->mat.C.A = monolis_alloc_C_1d(mat->mat.C.A, n_dof*n_dof*nz);
+  mat->mat.C.X = monolis_alloc_C_1d(mat->mat.C.X, n_dof*np);
+  mat->mat.C.B = monolis_alloc_C_1d(mat->mat.C.B, n_dof*np);
 
   int i;
   for(i = 0; i < np + 1; i++) {
@@ -461,9 +461,9 @@ void monolis_set_matrix_BCSR_C(
     mat->mat.R.A[i] = A[i];
   }
 
-  monolis_alloc_I_1d(mat->mat.CSC.index, np + 1);
-  monolis_alloc_I_1d(mat->mat.CSC.item, nz);
-  monolis_alloc_I_1d(mat->mat.CSC.perm, nz);
+  mat->mat.CSC.index = monolis_alloc_I_1d(mat->mat.CSC.index, np + 1);
+  mat->mat.CSC.item = monolis_alloc_I_1d(mat->mat.CSC.item, nz);
+  mat->mat.CSC.perm = monolis_alloc_I_1d(mat->mat.CSC.perm, nz);
 
   monolis_get_CSC_format(
     n,
